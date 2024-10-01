@@ -1,5 +1,0 @@
-{
-    "git.ignoreLimitWarning": true,
-    "clang-format.assumeFilename": "${workspaceFolder}.vscode/.clang-format",
-    "clang-format.fallbackStyle": "Google"
-}
