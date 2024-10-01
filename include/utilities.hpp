@@ -9,6 +9,7 @@
 #include <format>
 #include <ostream>
 #include <sstream>
+#include <chrono>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "../include/stb_image_write.h"
@@ -28,6 +29,7 @@ inline double clamp(double value, double min, double max) {
 inline double degrees_to_radians(double degrees) {
     return degrees * pi / 180.0;
 }
+
 
 
 

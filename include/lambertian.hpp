@@ -13,27 +13,14 @@ class lambertian : public material {
   {
     // 这里省略了rec.p + rec.normal + random_unit_vector() - rec.p中的rec.p;
     auto scatter_direction = rec.normal + random_unit_sphere();
-    scattered = ray(rec.p, scatter_direction);
-    attenuation = albedo;
-    return true;
-  }
-
- public:
-  color albedo;
-};
-// 在单位球体内部采样得到散射方向的材质类
-class lambertian_insphere : public material {
- public:
-  lambertian_insphere(const color& a) : albedo(a) {}
-
-  virtual bool scatter(const ray& r_in, const hit_record& rec,
-                       color& attenuation, ray& scattered) const override {
-    auto scatter_direction = rec.normal + random_in_unit_sphere();
-    if (scatter_direction.near_zero()) {
-      scatter_direction = rec.normal;
-    }
-    scattered = ray(rec.p, scatter_direction);
-    attenuation = albedo;
+     // 如果散射方向为0，则取法线方向作为散射方向
+        if (scatter_direction.near_zero())
+        {
+            scatter_direction = rec.normal;
+        }
+        // 散射光线时刻和入射光线一样
+        scattered = ray(rec.p, scatter_direction, r_in.time);
+        attenuation = albedo;
     return true;
   }
 
@@ -41,21 +28,5 @@ class lambertian_insphere : public material {
   color albedo;
 };
 
-// 在半球采样得到散射方向的材质类
-class lambertian_hemisphere : public material {
- public:
-  lambertian_hemisphere(const color& a) : albedo(a) {}
-
-  virtual bool scatter(const ray& r_in, const hit_record& rec,
-                       color& attenuation, ray& scattered) const override {
-    auto scatter_direction = random_in_hemisphere(rec.normal);
-    scattered = ray(rec.p, scatter_direction);
-    attenuation = albedo;
-    return true;
-  }
-
- public:
-  color albedo;
-};
 
 }  // namespace ZrRender

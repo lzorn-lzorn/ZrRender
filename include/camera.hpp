@@ -15,7 +15,9 @@ public:
         double vfov,
         double aspect_ratio,
         double aperture,    // 光圈大小，光圈为0就是之前的针孔相机
-        double focus_dist   // 焦点距离，在焦点距离处的物体不会发生散焦模糊
+        double focus_dist,   // 焦点距离，在焦点距离处的物体不会发生散焦模糊
+        double _time0 = 0,  // 快门开启时间
+        double _time1 = 0   // 快门关闭时间
     ) {
         // 通过视场角和宽高比计算视口大小，视场角是垂直方向的，单位是角度
         auto theta = degrees_to_radians(vfov);
@@ -31,9 +33,12 @@ public:
         // 视口
         horizontal = focus_dist * viewport_width * u;
         vertical = focus_dist * viewport_height * v;
-        lower_left_corner = origin - horizontal / 2 - vertical / 2 - focus_dist * w;
+        lower_left_corner = origin - horizontal * 0.5 - vertical * 0.5 - focus_dist * w;
         // 镜头半径等于光圈大小的一半
-        lens_radius = aperture / 2;
+        lens_radius = aperture * 0.5;
+        // 快门时间
+        time0 = _time0;
+        time1 = _time1;
     }
 
     ray get_ray(double s, double t) const {
@@ -43,7 +48,8 @@ public:
         // 从偏离远镜头的位置投射光线，模拟散焦
         return ray(
             origin + offset,
-            lower_left_corner + s * horizontal + t * vertical - origin - offset
+            lower_left_corner + s * horizontal + t * vertical - origin - offset,
+            random_double(time0, time1)
         );
     }
 private:
@@ -53,6 +59,7 @@ private:
     vec3 vertical;
     vec3 u, v, w;
     double lens_radius;
+    double time0, time1;
 };
 
 }  // namespace ZrRender

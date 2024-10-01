@@ -1,5 +1,9 @@
-./.vscode/
-./build/
-.clang-format
-.clang-tidy
-.clangd
+/.clangd
+/.clang-tidy
+/.clang-format
+
+
+.vscode/
+
+
+/build/

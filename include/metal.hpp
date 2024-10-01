@@ -18,7 +18,7 @@ class metal : public material {
   {
     // 传入镜面反射函数都是单位向量
     vec3 reflected = reflect(normalize(r_in.direction), rec.normal);
-    scattered = ray(rec.p, reflected);
+    scattered = ray(rec.p, reflected, r_in.time);
     attenuation = albedo;
     return (dot(scattered.direction, rec.normal) > 0);
   }

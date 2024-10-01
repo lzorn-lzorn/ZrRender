@@ -6,14 +6,15 @@ namespace ZrRender {
 class ray {
 public:
   ray() {}
-  ray(const vec3 &origin, const vec3 &direction)
-      : origin(origin), direction(direction) {}
+  ray(const vec3 &origin, const vec3 &direction, double time = 0.0)
+      : origin(origin), direction(direction), time(time) {}
 
   point3 at(double t) const {
     return origin + direction * t;
   }
   point3 origin;
   vec3 direction;
+  double time;
 };
 
 inline vec3 reflect(const vec3 &v, const vec3 &n) {
