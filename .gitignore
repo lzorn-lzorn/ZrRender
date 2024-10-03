@@ -1,6 +1,6 @@
-/.clangd
-/.clang-tidy
-/.clang-format
+.clangd
+.clang-tidy
+.clang-format
 
-
-/build/
+build/
+output/
