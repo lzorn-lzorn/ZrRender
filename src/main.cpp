@@ -15,11 +15,15 @@
 #include "../include/texture.hpp"
 #include "../include/aabb.hpp"
 #include "../include/BVH.hpp"
+#include "../include/noise.hpp"
+
 
 using namespace ZrRender;
+static object_group world;
+static bvh_node world_box;
 // 随机构建场景
 object_group& random_scene() {
-    static object_group world;
+    
 
     auto checker = make_shared<checker_texture>(color(0.2, 0.3, 0.1), color(0.9, 0.9, 0.9));
     auto ground_material = make_shared<lambertian>(checker);
@@ -75,8 +79,21 @@ object_group& random_scene() {
 
     return world;
 }
+object_group& two_spheres() {
+    auto checker = make_shared<checker_texture>(color(0.2, 0.3, 0.1), color(0.9, 0.9, 0.9));
+    world.add(make_shared<sphere>(point3(0, -1000, 0), point3(0, -1000, 0), 0.0, 1.0, 1000, make_shared<lambertian>(checker)));
+    world.add(make_shared<sphere>(point3(0, 2, 0), point3(0, 2, 0), 0.0, 1.0, 2, make_shared<lambertian>(checker)));
 
+    return world;
+}
+// Perlin噪声测试场景
+object_group& two_perlin_spheres() {
+    auto pertext = make_shared<perlin_noise_texture>(4);
+    world.add(make_shared<sphere>(point3(0, -1000, 0), point3(0, -1000, 0), 0.0, 1.0, 1000, make_shared<lambertian>(pertext)));
+    world.add(make_shared<sphere>(point3(0, 2, 0), point3(0, 2, 0), 0.0, 1.0, 2, make_shared<lambertian>(pertext)));
 
+    return world;
+}
 int main()
 {
     ZrRender::clock timer;
@@ -84,7 +101,7 @@ int main()
 
     /****图片保存，保存为png格式****/
     std::string SavePath = "/home/lzorn/ZrRender/output/";
-    std::string filename = "BlendColor.png";
+    std::string filename = "BlendColor2.png";
     std::string filepath = SavePath + filename;
     
     /*******图片属性*******/ 
@@ -101,19 +118,47 @@ int main()
     const int min_bounce = 45;
     // 俄罗斯轮盘赌算法生存概率
     const double RR = 0.9;
+    
+    point3 lookfrom;
+    point3 lookat;
+    auto vfov = 40.0;
+    auto aperture = 0.0;
+
+    switch(2)
+    {
+        case 0:
+            world = random_scene();
+            world_box = bvh_node(world.group, 0, world.group.size(), 0.0, 0.1);
+            lookfrom = point3(13, 2, 3);
+            lookat = point3(0, 0, 0);
+            vfov = 20.0;
+            aperture = 0.1;
+            break;
+        case 1:
+            world = two_spheres();
+            world_box = bvh_node(world.group, 0, world.group.size(), 0.0, 0.1);
+            lookfrom = point3(13, 2, 3);
+            lookat = point3(0, 0, 0);
+            vfov = 20.0;
+            break;
+        case 2:
+            world = two_perlin_spheres();
+            world_box = bvh_node(world.group, 0, world.group.size(), 0.0, 0.1);
+            lookfrom = point3(13, 2, 3);
+            lookat = point3(0, 0, 0);
+            vfov = 20.0;
+            break;
+    }
+
+    vec3 vup(0, 1, 0);
+    double dist_to_focus = 10.0;
+
 
     /*******创建相机*******/
-    point3 lookfrom(13, 2, 3);
-    point3 lookat(0, 0, 0);
-    vec3 vup(0, 1, 0);
-    auto dist_to_focus = 10.0;
-    auto aperture = 0.1;
-
     camera cam(lookfrom, lookat, vup, 20, aspect_ratio, aperture, dist_to_focus, 0.0, 0.001);
 
-    /*******创建场景*******/
-    object_group& world = random_scene();
-    auto world_box = bvh_node(world.group, 0, world.group.size(), 0.0, 0.1);
+    
+    
     /******渲染部分*****/
     // 3通道图像存在一维数组中
     unsigned char* odata = (unsigned char*)malloc(image_width * image_height * channel);
@@ -135,7 +180,7 @@ int main()
     }
     stbi_write_png(filepath.c_str(), image_width, image_height, channel, odata, 0);
     timer.stop();
-
-    std::cerr << "\nDone.Elapsed time: "<< timer.elapsed()/60 << " mins" << std::endl;
-
+    auto [minutes, seconds] = timer.elapsed_minutes_and_seconds();
+    std::cerr << "\nDone.Elapsed time: " << minutes << " minutes and " << seconds << " seconds." << std::endl;
+    return 0;
 }

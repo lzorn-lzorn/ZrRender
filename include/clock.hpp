@@ -26,7 +26,12 @@ public:
             return std::chrono::duration<double>(end_time - start_time).count();
         }
     }
-
+    std::tuple<int, int> elapsed_minutes_and_seconds() const {
+        double total_seconds = elapsed(); // 获取总的秒数
+        int minutes = static_cast<int>(total_seconds) / 60; // 计算分钟
+        int seconds = static_cast<int>(total_seconds) % 60; // 计算秒数
+        return std::make_tuple(minutes, seconds);
+    }
 private:
     std::chrono::high_resolution_clock::time_point start_time;
     std::chrono::high_resolution_clock::time_point end_time;
