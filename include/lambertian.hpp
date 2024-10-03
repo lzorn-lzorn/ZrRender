@@ -2,10 +2,14 @@
 
 #include "../include/object.hpp"
 #include "../include/random.hpp"
+#include "../include/texture.hpp"
+#include "../include/vec3.hpp"
+
 namespace ZrRender {
 class lambertian : public material {
  public:
-  lambertian(const color& a) : albedo(a) {}
+  lambertian(const color& a) : albedo(make_shared<solid_color>(a)) {}
+  lambertian(const shared_ptr<texture>& a) : albedo(a) {}
   virtual bool scatter(const ray& r_in,
                        const hit_record& rec, 
                        color& attenuation, 
@@ -20,12 +24,12 @@ class lambertian : public material {
         }
         // 散射光线时刻和入射光线一样
         scattered = ray(rec.p, scatter_direction, r_in.time);
-        attenuation = albedo;
+        attenuation = albedo->value(rec.u, rec.v, rec.p);
     return true;
   }
 
  public:
-  color albedo;
+  shared_ptr<texture> albedo;
 };
 
 

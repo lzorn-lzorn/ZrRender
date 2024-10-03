@@ -1,9 +1,6 @@
 #pragma once
 
 #include "../include/ray.hpp"
-
-
-// #include "../include/utilities.hpp"
 #include "../include/vec3.hpp"
 namespace ZrRender {
 

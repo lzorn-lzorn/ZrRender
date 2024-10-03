@@ -12,14 +12,17 @@
 #include "../include/dielectric.hpp"
 #include "../include/random.hpp"
 #include "../include/clock.hpp"
+#include "../include/texture.hpp"
+#include "../include/aabb.hpp"
+#include "../include/BVH.hpp"
 
 using namespace ZrRender;
 // 随机构建场景
-object_group random_scene() {
-    
-    object_group world;
+object_group& random_scene() {
+    static object_group world;
 
-    auto ground_material = make_shared<lambertian>(color(0.5, 0.5, 0.5));
+    auto checker = make_shared<checker_texture>(color(0.2, 0.3, 0.1), color(0.9, 0.9, 0.9));
+    auto ground_material = make_shared<lambertian>(checker);
     world.add(make_shared<sphere>(
         point3(0, -1000, 0), point3(0, -1000, 0), 0.0, 1.0, 1000, ground_material));
 
@@ -106,11 +109,11 @@ int main()
     auto dist_to_focus = 10.0;
     auto aperture = 0.1;
 
-    camera cam(lookfrom, lookat, vup, 20, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0);
+    camera cam(lookfrom, lookat, vup, 20, aspect_ratio, aperture, dist_to_focus, 0.0, 0.001);
 
     /*******创建场景*******/
-    auto world = random_scene();
-
+    object_group& world = random_scene();
+    auto world_box = bvh_node(world.group, 0, world.group.size(), 0.0, 0.1);
     /******渲染部分*****/
     // 3通道图像存在一维数组中
     unsigned char* odata = (unsigned char*)malloc(image_width * image_height * channel);
@@ -125,7 +128,7 @@ int main()
                 auto u = (i + random_double()) / (image_width - 1);
                 auto v = (j + random_double()) / (image_height - 1);
                 ray r = cam.get_ray(u, v);
-                pixel_color += ray_color(r, world, min_bounce, RR);
+                pixel_color += ray_color_with_bvh(r, world_box, min_bounce, RR);
             }
             write_color(p, pixel_color, samples_per_pixel);
         }

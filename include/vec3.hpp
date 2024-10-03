@@ -12,6 +12,31 @@ class vec3 {
 
   vec3(double x, double y, double z) : x(x), y(y), z(z) {}
 
+
+  double operator[](int i) const {
+    switch (i) {
+      case 0:
+        return x;
+      case 1:
+        return y;
+      case 2:
+        return z;
+      default:
+        throw std::runtime_error("from vec3->operator[]: index out of range");
+    }
+  }
+  double operator[](int i) {
+    switch (i) {
+      case 0:
+        return x;
+      case 1:
+        return y;
+      case 2:
+        return z;
+      default:
+        throw std::runtime_error("from vec3->operator[]: index out of range");
+    }
+  }
   vec3 operator-() const { return vec3(-x, -y, -z); }
 
   vec3 operator=(const vec3& v) {
@@ -87,6 +112,7 @@ class vec3 {
     return (std::fabs(x) < epsilon) && (std::fabs(y) < epsilon) &&
            (std::fabs(z) < epsilon);
   }
+
 };
 
 using point3 = vec3;

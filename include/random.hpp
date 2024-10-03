@@ -4,6 +4,7 @@
 namespace ZrRender {
   
 
+
 inline double random_double() {
   static std::uniform_real_distribution<double> distribution(0.0, 1.0);
   static std::mt19937 generator;
@@ -20,6 +21,9 @@ inline vec3 random_vec() {
 inline vec3 random_vec(double min, double max) {
   return vec3(random_double(min, max), random_double(min, max),
               random_double(min, max));
+}
+inline int random_int(int min, int max) {
+    return static_cast<int>(random_double(min, max + 1));
 }
 inline point3 random_in_unit_sphere() {
   point3 p{};

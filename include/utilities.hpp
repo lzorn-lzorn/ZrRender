@@ -10,13 +10,15 @@
 #include <ostream>
 #include <sstream>
 #include <chrono>
+#include <algorithm>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "../include/stb_image_write.h"
 
 namespace ZrRender {
 
-using std::make_shared;
+    using std::make_shared;
+    using std::shared_ptr;
     static constexpr double epsilon = std::numeric_limits<double>::epsilon();
     static constexpr double inifinity = std::numeric_limits<double>::infinity();
     static constexpr double pi = 3.14159265358979323846;
